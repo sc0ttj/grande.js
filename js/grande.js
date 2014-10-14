@@ -46,7 +46,7 @@
 
   function attachToolbarTemplate() {
     var div = document.createElement("div"),
-        toolbarTemplate = "<div class='options'> \
+        toolbarTemplate = "<div class='g-options'> \
           <span class='no-overflow'> \
             <span class='ui-inputs'> \
               <button class='bold'>B</button> \

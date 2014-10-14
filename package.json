@@ -10,15 +10,15 @@
   "scripts": {
     "test": "grunt travis --verbose"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "istanbul": "~0.1.10",
     "sinon": "*",
-    "grunt": "~0.4.1",
+    "grunt": "~0.4.5",
     "qunitjs": "*",
     "grunt-qunit-istanbul": "*",
-    "grunt-contrib-uglify": "*"
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-cssmin": "~0.10.0"
   },
   "keywords": [
     "ui",

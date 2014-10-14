@@ -19,12 +19,22 @@ module.exports = function(grunt) {
           'dist/grande.min.js': ['js/grande.js']
         }
       }
+    },
+    cssmin: {
+      all: {
+        files: {
+          'dist/grande.min.css': ['css/menu.js', 'css/editor.css']
+        }
+      }
     }
   });
 
   grunt.loadNpmTasks("grunt-qunit-istanbul");
   grunt.loadNpmTasks("grunt-contrib-uglify");
+  grunt.loadNpmTasks("grunt-contrib-cssmin");
   // @TODO: add lint hook here as well for eslint
   grunt.registerTask("travis", "qunit");
+
+  grunt.registerTask("build", ["uglify", "cssmin"]);
 };
 
