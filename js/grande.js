@@ -62,7 +62,7 @@
         imageTooltipTemplate = document.createElement("div"),
         toolbarContainer = document.createElement("div");
 
-    toolbarContainer.className = "g-body";
+    toolbarContainer.className = "g-options-container";
     document.body.appendChild(toolbarContainer);
 
     imageTooltipTemplate.innerHTML = "<div class='pos-abs file-label'>Insert image</div> \
@@ -80,7 +80,7 @@
     imageInput = document.querySelectorAll(".file-label + input")[0];
     imageTooltip = document.querySelectorAll(".image-tooltip")[0];
     textMenu = document.querySelectorAll(".text-menu")[0];
-    optionsNode = document.querySelectorAll(".text-menu .options")[0];
+    optionsNode = document.querySelectorAll(".text-menu .g-options")[0];
     urlInput = document.querySelectorAll(".text-menu .url-input")[0];
   }
 
@@ -429,7 +429,7 @@
 
           case "a":
             toggleUrlInput();
-            optionsNode.className = "options url-mode";
+            optionsNode.className = "g-options url-mode";
             return;
         }
       }
@@ -441,7 +441,7 @@
   function triggerUrlBlur(event) {
     var url = urlInput.value;
 
-    optionsNode.className = "options";
+    optionsNode.className = "g-options";
     window.getSelection().addRange(previouslySelectedText);
 
     document.execCommand("unlink", false);
