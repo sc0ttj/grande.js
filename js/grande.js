@@ -7,6 +7,7 @@
       editableNodes = document.querySelectorAll(".g-body article"),
       editNode = editableNodes[0], // TODO: cross el support for imageUpload
       isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1,
+      toolbarAttached,
       options = {
         animate: true
       },
@@ -29,7 +30,9 @@
       };
 
   function attachToolbarTemplate() {
-    var div = document.createElement("div"),
+    if (!toolbarAttached) {
+      toolbarAttached = true;
+      var div = document.createElement("div"),
         toolbarTemplate = "<div class='g-options'> \
           <span class='no-overflow'> \
             <span class='ui-inputs'> \
@@ -46,26 +49,27 @@
         imageTooltipTemplate = document.createElement("div"),
         toolbarContainer = document.createElement("div");
 
-    toolbarContainer.className = "g-options-container";
-    document.body.appendChild(toolbarContainer);
+      toolbarContainer.className = "g-options-container";
+      document.body.appendChild(toolbarContainer);
 
-    imageTooltipTemplate.innerHTML = "<div class='pos-abs file-label'>Insert image</div> \
+      imageTooltipTemplate.innerHTML = "<div class='pos-abs file-label'>Insert image</div> \
                                         <input class='file-hidden pos-abs' type='file' id='files' name='files[]' accept='image/*' multiple/>";
-    imageTooltipTemplate.className = "image-tooltip hide";
+      imageTooltipTemplate.className = "image-tooltip hide";
 
-    div.className = "text-menu hide";
-    div.innerHTML = toolbarTemplate;
+      div.className = "text-menu hide";
+      div.innerHTML = toolbarTemplate;
 
-    if (document.querySelectorAll(".text-menu").length === 0) {
-      toolbarContainer.appendChild(div);
-      toolbarContainer.appendChild(imageTooltipTemplate);
+      if (document.querySelectorAll(".text-menu").length === 0) {
+        toolbarContainer.appendChild(div);
+        toolbarContainer.appendChild(imageTooltipTemplate);
+      }
+
+      imageInput = document.querySelectorAll(".file-label + input")[0];
+      imageTooltip = document.querySelectorAll(".image-tooltip")[0];
+      textMenu = document.querySelectorAll(".text-menu")[0];
+      optionsNode = document.querySelectorAll(".text-menu .g-options")[0];
+      urlInput = document.querySelectorAll(".text-menu .url-input")[0];
     }
-
-    imageInput = document.querySelectorAll(".file-label + input")[0];
-    imageTooltip = document.querySelectorAll(".image-tooltip")[0];
-    textMenu = document.querySelectorAll(".text-menu")[0];
-    optionsNode = document.querySelectorAll(".text-menu .g-options")[0];
-    urlInput = document.querySelectorAll(".text-menu .url-input")[0];
   }
 
   function bindTextSelectionEvents() {
@@ -79,9 +83,9 @@
 
     document.addEventListener('selectionchange', triggerTextSelection);
 
-    document.onkeydown = preprocessKeyDown;
+    document.addEventListener('keydown', preprocessKeyDown);
 
-    document.onkeyup = function(event){
+    document.addEventListener('keyup', function (event) {
       var sel = window.getSelection();
 
       // FF will return sel.anchorNode to be the parentNode when the triggered keyCode is 13
@@ -92,13 +96,13 @@
           triggerTextParse(event);
         }
       }
-    };
+    });
 
     // Handle window resize events
-    root.onresize = triggerTextSelection;
+    root.addEventListener('resize', triggerTextSelection);
 
-    urlInput.onblur = triggerUrlBlur;
-    urlInput.onkeydown = triggerUrlSet;
+    urlInput.addEventListener('blur', triggerUrlBlur);
+    urlInput.addEventListener('keydown', triggerUrlSet);
 
     if (options.allowImages) {
       imageTooltip.onmousedown = triggerImageUpload;
@@ -362,7 +366,9 @@
 
     unwrap = insertedNode &&
             ["ul", "ol"].indexOf(insertedNode.nodeName.toLocaleLowerCase()) >= 0 &&
-            ["p", "div"].indexOf(insertedNode.parentNode.nodeName.toLocaleLowerCase()) >= 0;
+            ["p", "div"].indexOf(insertedNode.parentNode.nodeName.toLocaleLowerCase()) >= 0 &&
+            insertedNode.parentNode.className.indexOf('g-body') === -1
+
 
     if (unwrap) {
       node = sel.anchorNode;
@@ -425,7 +431,9 @@
     var url = urlInput.value;
 
     optionsNode.className = "g-options";
-    window.getSelection().addRange(previouslySelectedText);
+    if(previouslySelectedText){
+      window.getSelection().addRange(previouslySelectedText);
+    }
 
     document.execCommand("unlink", false);
 
