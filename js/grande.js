@@ -89,14 +89,7 @@
         len,
         node;
 
-    // Trigger on both mousedown and mouseup so that the click on the menu
-    // feels more instantaneously active
-    document.onmousedown = triggerTextSelection;
-    document.onmouseup = function(event) {
-      setTimeout(function() {
-        triggerTextSelection(event);
-      }, 1);
-    };
+    document.onselectionchange = triggerTextSelection;
 
     document.onkeydown = preprocessKeyDown;
 
@@ -128,7 +121,6 @@
     for (i = 0, len = editableNodes.length; i < len; i++) {
       node = editableNodes[i];
       node.contentEditable = true;
-      node.onmousedown = node.onkeyup = node.onmouseup = triggerTextSelection;
     }
   }
 
@@ -451,6 +443,7 @@
     document.execCommand("unlink", false);
 
     if (url === "") {
+      previouslySelectedText = undefined;
       return false;
     }
 
@@ -460,6 +453,7 @@
 
     document.execCommand("createLink", false, url);
 
+    previouslySelectedText = undefined;
     urlInput.value = "";
   }
 
@@ -533,28 +527,25 @@
     var selectedText = root.getSelection(),
         range,
         clientRectBounds,
-        target = e.target || e.srcElement;
+        target = (e.target||{}).activeElement || e.target || e.srcElement || document.activeElement;
 
-    // The selected text is not editable
-    if (!target.isContentEditable) {
-      reloadMenuState();
-      return;
-    }
+    if (!previouslySelectedText) {
+      // The selected text is not editable
+      if (!target.isContentEditable || selectedText.isCollapsed) {
+        setTextMenuPosition(EDGE, EDGE);
+        textMenu.className = "text-menu hide";
+        reloadMenuState();
+      } else {
+        range = selectedText.getRangeAt(0);
+        clientRectBounds = range.getBoundingClientRect();
 
-    // The selected text is collapsed, push the menu out of the way
-    if (selectedText.isCollapsed) {
-      setTextMenuPosition(EDGE, EDGE);
-      textMenu.className = "text-menu hide";
-    } else {
-      range = selectedText.getRangeAt(0);
-      clientRectBounds = range.getBoundingClientRect();
-
-      // Every time we show the menu, reload the state
-      reloadMenuState();
-      setTextMenuPosition(
-        clientRectBounds.top - 5 + root.pageYOffset,
-        (clientRectBounds.left + clientRectBounds.right) / 2
-      );
+        // Every time we show the menu, reload the state
+        reloadMenuState();
+        setTextMenuPosition(
+            clientRectBounds.bottom + 55 + +root.pageYOffset,
+            (clientRectBounds.left + clientRectBounds.right) / 2
+        );
+      }
     }
   }
 
