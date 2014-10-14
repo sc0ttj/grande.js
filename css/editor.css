@@ -4,6 +4,10 @@
 }
 
 
+.g-body
+{
+    outline: none;
+}
 
 .g-body h1,
 .g-body p,
