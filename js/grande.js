@@ -89,7 +89,11 @@
         len,
         node;
 
-    document.onselectionchange = triggerTextSelection;
+    if (selectionchange) {
+      selectionchange.start();
+    }
+
+    document.addEventListener('selectionchange', triggerTextSelection);
 
     document.onkeydown = preprocessKeyDown;
 
