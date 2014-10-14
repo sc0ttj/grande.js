@@ -11,31 +11,15 @@
         animate: true
       },
       textMenu,
+      range,
       optionsNode,
       urlInput,
       previouslySelectedText,
       imageTooltip,
       imageInput,
-      imageBound;
+      imageBound,
 
-      grande = {
-        bind: function(bindableNodes, opts) {
-          if (bindableNodes) {
-            editableNodes = bindableNodes;
-          }
-
-          options = opts || options;
-
-          attachToolbarTemplate();
-          bindTextSelectionEvents();
-          bindTextStylingEvents();
-        },
-        select: function() {
-          triggerTextSelection();
-        }
-      },
-
-      tagClassMap = {
+    tagClassMap = {
         "b": "bold",
         "i": "italic",
         "h1": "header1",
@@ -273,9 +257,9 @@
         isHr;
 
     if (event.keyCode === 13 && parentParagraph) {
-      prevSibling = parentParagraph.previousSibling;
-      isHr = prevSibling && prevSibling.nodeName === "HR" &&
-        !parentParagraph.textContent.length;
+      isHr = ((parentParagraph.previousSibling || {}).nodeName === "HR" ||
+        (parentParagraph.previousElementSibling || {}).nodeName === "HR") &&
+        (sel.extentOffset === 0 || !parentParagraph.textContent.length);
 
       // Stop enters from creating another <p> after a <hr> on enter
       if (isHr) {
@@ -358,8 +342,7 @@
         insertedNode,
         unwrap,
         node,
-        parent,
-        range;
+        parent;
 
     // FF will return sel.anchorNode to be the parentNode when the triggered keyCode is 13
     if (!sel.isCollapsed || !sel.anchorNode || sel.anchorNode.nodeName === "ARTICLE") {
@@ -566,6 +549,21 @@
     }
   }
 
-  root.grande = grande;
+  root.grande = {
+    bind: function (bindableNodes, opts) {
+      if (bindableNodes) {
+        editableNodes = bindableNodes;
+      }
+
+      options = opts || options;
+
+      attachToolbarTemplate();
+      bindTextSelectionEvents();
+      bindTextStylingEvents();
+    },
+    select: function () {
+      triggerTextSelection();
+    }
+  };
 
 }).call(this);
