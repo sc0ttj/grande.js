@@ -23,7 +23,7 @@ module.exports = function(grunt) {
     cssmin: {
       all: {
         files: {
-          'dist/grande.min.css': ['css/menu.js', 'css/editor.css']
+          'dist/grande.min.css': ['css/menu.css', 'css/editor.css']
         }
       }
     }
