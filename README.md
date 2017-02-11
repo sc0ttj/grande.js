@@ -23,6 +23,7 @@ Simply `bower install grande`
 
 Or add this just before the `</body>` tag in your page:
 ```
+<script type="text/javascript" src="path/to/grande.min.js"></script>
 <script type="text/javascript">
   grande.bind(document.querySelectorAll(".content"));
 </script>
