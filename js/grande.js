@@ -48,7 +48,10 @@
         toolbarContainer = document.createElement("div");
 
       toolbarContainer.className = "g-options-container";
-      document.body.appendChild(toolbarContainer);
+      
+      if (document.querySelectorAll('.g-options-container').length < 1){
+        document.body.appendChild(toolbarContainer);
+      }
 
       div.className = "text-menu hide";
       div.innerHTML = toolbarTemplate;
