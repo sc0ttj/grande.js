@@ -16,14 +16,14 @@ module.exports = function(grunt) {
     uglify: {
       all: {
         files: {
-          'dist/grande.min.js': ['js/grande.js']
+          'dist/grande.min.js': ['js/grande.js', 'js/selectionchange.js']
         }
       }
     },
     cssmin: {
       all: {
         files: {
-          'dist/grande.min.css': ['css/menu.css', 'css/editor.css']
+          'dist/grande.min.css': ['css/menu.css']
         }
       }
     }

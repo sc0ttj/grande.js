@@ -16,15 +16,15 @@
       optionsNode,
       urlInput,
       previouslySelectedText,
-      imageTooltip,
-      imageInput,
-      imageBound,
+      // imageTooltip,
+      // imageInput,
+      // imageBound,
 
-    tagClassMap = {
+      tagClassMap = {
         "b": "bold",
         "i": "italic",
-        "h1": "header1",
-        "h2": "header2",
+        // "h1": "header1",
+        // "h2": "header2",
         "a": "url",
         "blockquote": "quote"
       };
@@ -38,34 +38,25 @@
             <span class='ui-inputs'> \
               <button class='bold'>B</button> \
               <button class='italic'>i</button> \
-              <button class='header1'>h1</button> \
-              <button class='header2'>h2</button> \
               <button class='quote'>&rdquo;</button> \
-              <button class='url useicons'>&#xe001;</button> \
+              <button class='url'>&#128279;</button> \
               <input class='url-input' type='text' placeholder='Paste or type a link'/> \
             </span> \
           </span> \
         </div>",
-        imageTooltipTemplate = document.createElement("div"),
+        // imageTooltipTemplate = document.createElement("div"),
         toolbarContainer = document.createElement("div");
 
       toolbarContainer.className = "g-options-container";
       document.body.appendChild(toolbarContainer);
-
-      imageTooltipTemplate.innerHTML = "<div class='pos-abs file-label'>Insert image</div> \
-                                        <input class='file-hidden pos-abs' type='file' id='files' name='files[]' accept='image/*' multiple/>";
-      imageTooltipTemplate.className = "image-tooltip hide";
 
       div.className = "text-menu hide";
       div.innerHTML = toolbarTemplate;
 
       if (document.querySelectorAll(".text-menu").length === 0) {
         toolbarContainer.appendChild(div);
-        toolbarContainer.appendChild(imageTooltipTemplate);
       }
 
-      imageInput = document.querySelectorAll(".file-label + input")[0];
-      imageTooltip = document.querySelectorAll(".image-tooltip")[0];
       textMenu = document.querySelectorAll(".text-menu")[0];
       optionsNode = document.querySelectorAll(".text-menu .g-options")[0];
       urlInput = document.querySelectorAll(".text-menu .url-input")[0];
@@ -83,121 +74,26 @@
 
     document.addEventListener('selectionchange', triggerTextSelection);
 
-    document.addEventListener('keydown', preprocessKeyDown);
+    // document.addEventListener('keydown', preprocessKeyDown);
 
-    document.addEventListener('keyup', function (event) {
-      var sel = window.getSelection();
+    // document.addEventListener('keyup', function (event) {
+    //   var sel = window.getSelection();
 
-      // FF will return sel.anchorNode to be the parentNode when the triggered keyCode is 13
-      if (sel.anchorNode && sel.anchorNode.nodeName !== "ARTICLE") {
-        triggerNodeAnalysis(event);
+    //   // FF will return sel.anchorNode to be the parentNode when the triggered keyCode is 13
+    //   if (sel.anchorNode && sel.anchorNode.nodeName !== "ARTICLE") {
+    //     triggerNodeAnalysis(event);
 
-        if (sel.isCollapsed) {
-          triggerTextParse(event);
-        }
-      }
-    });
+    //     if (sel.isCollapsed) {
+    //       triggerTextParse(event);
+    //     }
+    //   }
+    // });
 
     // Handle window resize events
     root.addEventListener('resize', triggerTextSelection);
 
     urlInput.addEventListener('blur', triggerUrlBlur);
     urlInput.addEventListener('keydown', triggerUrlSet);
-
-    if (options.allowImages) {
-      imageTooltip.onmousedown = triggerImageUpload;
-      imageInput.onchange = uploadImage;
-      document.onmousemove = triggerOverlayStyling;
-    }
-
-    for (i = 0, len = editableNodes.length; i < len; i++) {
-      node = editableNodes[i];
-      node.contentEditable = true;
-    }
-  }
-
-  function triggerOverlayStyling(event) {
-    toggleImageTooltip(event, event.target);
-  }
-
-  function triggerImageUpload(event) {
-    // Cache the bound that was originally clicked on before the image upload
-    var childrenNodes = editNode.children,
-        editBounds = editNode.getBoundingClientRect();
-
-    imageBound = getHorizontalBounds(childrenNodes, editBounds, event);
-  }
-
-  function uploadImage(event) {
-    // Only allow uploading of 1 image for now, this is the first file
-    var file = this.files[0],
-        reader = new FileReader(),
-        figEl;
-
-    reader.onload = (function(f) {
-      return function(e) {
-        figEl = document.createElement("figure");
-        figEl.innerHTML = "<img src=\"" + e.target.result + "\"/>";
-        editNode.insertBefore(figEl, imageBound.bottomElement);
-      };
-    }(file));
-
-    reader.readAsDataURL(file);
-  }
-
-  function toggleImageTooltip(event, element) {
-    var childrenNodes = editNode.children,
-        editBounds = editNode.getBoundingClientRect(),
-        bound = getHorizontalBounds(childrenNodes, editBounds, event);
-
-    if (bound) {
-      imageTooltip.style.left = (editBounds.left - 90 ) + "px";
-      imageTooltip.style.top = (bound.top - 17) + "px";
-    } else {
-      imageTooltip.style.left = EDGE + "px";
-      imageTooltip.style.top = EDGE + "px";
-    }
-  }
-
-  function getHorizontalBounds(nodes, target, event) {
-    var bounds = [],
-        bound,
-        i,
-        len,
-        preNode,
-        postNode,
-        bottomBound,
-        topBound,
-        coordY;
-
-    // Compute top and bottom bounds for each child element
-    for (i = 0, len = nodes.length - 1; i < len; i++) {
-      preNode = nodes[i];
-      postNode = nodes[i+1] || null;
-
-      bottomBound = preNode.getBoundingClientRect().bottom - 5;
-      topBound = postNode.getBoundingClientRect().top;
-
-      bounds.push({
-        top: topBound,
-        bottom: bottomBound,
-        topElement: preNode,
-        bottomElement: postNode,
-        index: i+1
-      });
-    }
-
-    coordY = event.pageY - root.scrollY;
-
-    // Find if there is a range to insert the image tooltip between two elements
-    for (i = 0, len = bounds.length; i < len; i++) {
-      bound = bounds[i];
-      if (coordY < bound.top && coordY > bound.bottom) {
-        return bound;
-      }
-    }
-
-    return null;
   }
 
   function iterateTextMenuButtons(callback) {
@@ -254,66 +150,66 @@
     });
   }
 
-  function preprocessKeyDown(event) {
-    var sel = window.getSelection(),
-        parentParagraph = getParentWithTag(sel.anchorNode, "p"),
-        p,
-        isHr;
+  // function preprocessKeyDown(event) {
+  //   var sel = window.getSelection(),
+  //       parentParagraph = getParentWithTag(sel.anchorNode, "p"),
+  //       p,
+  //       isHr;
 
-    if (event.keyCode === 13 && parentParagraph) {
-      isHr = ((parentParagraph.previousSibling || {}).nodeName === "HR" ||
-        (parentParagraph.previousElementSibling || {}).nodeName === "HR") &&
-        (sel.extentOffset === 0 || !parentParagraph.textContent.length);
+  //   if (event.keyCode === 13 && parentParagraph) {
+  //     isHr = ((parentParagraph.previousSibling || {}).nodeName === "HR" ||
+  //       (parentParagraph.previousElementSibling || {}).nodeName === "HR") &&
+  //       (sel.extentOffset === 0 || !parentParagraph.textContent.length);
 
-      // Stop enters from creating another <p> after a <hr> on enter
-      if (isHr) {
-        event.preventDefault();
-      }
-    }
-  }
+  //     // Stop enters from creating another <p> after a <hr> on enter
+  //     if (isHr) {
+  //       event.preventDefault();
+  //     }
+  //   }
+  // }
 
-  function triggerNodeAnalysis(event) {
-    var sel = window.getSelection(),
-        anchorNode,
-        parentParagraph;
+  // function triggerNodeAnalysis(event) {
+  //   var sel = window.getSelection(),
+  //       anchorNode,
+  //       parentParagraph;
 
-    if (event.keyCode === 13) {
+  //   if (event.keyCode === 13) {
 
-      // Enters should replace it's parent <div> with a <p>
-      if (sel.anchorNode.nodeName === "DIV") {
-        toggleFormatBlock("p");
-      }
+  //     // Enters should replace it's parent <div> with a <p>
+  //     if (sel.anchorNode.nodeName === "DIV") {
+  //       toggleFormatBlock("p");
+  //     }
 
-      parentParagraph = getParentWithTag(sel.anchorNode, "p");
+  //     // parentParagraph = getParentWithTag(sel.anchorNode, "p");
 
-      if (parentParagraph) {
-        insertHorizontalRule(parentParagraph);
-      }
-    }
-  }
+  //     // if (parentParagraph) {
+  //     //   insertHorizontalRule(parentParagraph);
+  //     // }
+  //   }
+  // }
 
-  function insertHorizontalRule(parentParagraph) {
-    var prevSibling,
-        prevPrevSibling,
-        hr;
+  // function insertHorizontalRule(parentParagraph) {
+  //   var prevSibling,
+  //       prevPrevSibling,
+  //       hr;
 
-    prevSibling = parentParagraph.previousSibling;
-    prevPrevSibling = prevSibling;
+  //   prevSibling = parentParagraph.previousSibling;
+  //   prevPrevSibling = prevSibling;
 
-    while (prevPrevSibling) {
-      if (prevPrevSibling.nodeType != Node.TEXT_NODE) {
-        break;
-      }
+  //   while (prevPrevSibling) {
+  //     if (prevPrevSibling.nodeType != Node.TEXT_NODE) {
+  //       break;
+  //     }
 
-      prevPrevSibling = prevPrevSibling.previousSibling;
-    }
+  //     prevPrevSibling = prevPrevSibling.previousSibling;
+  //   }
 
-    if (prevSibling.nodeName === "P" && !prevSibling.textContent.length && prevPrevSibling.nodeName !== "HR") {
-      hr = document.createElement("hr");
-      hr.contentEditable = false;
-      parentParagraph.parentNode.replaceChild(hr, prevSibling);
-    }
-  }
+  //   if (prevSibling.nodeName === "P" && !prevSibling.textContent.length && prevPrevSibling.nodeName !== "HR") {
+  //     hr = document.createElement("hr");
+  //     hr.contentEditable = false;
+  //     parentParagraph.parentNode.replaceChild(hr, prevSibling);
+  //   }
+  // }
 
   function getTextProp(el) {
     var textProp;
@@ -546,7 +442,7 @@
 
   function setTextMenuPosition(top, left) {
     textMenu.style.top = top + "px";
-    textMenu.style.left = left + "px";
+    textMenu.style.left = (left+25) + "px";
 
     if (options.animate) {
       if (top === EDGE) {
